@@ -81,7 +81,7 @@ with DAG(
         task_id='delete_from_datamart',
         python_callable=generate_delete_query,
         op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
-        provide_context=True,
+        provide_context=False,
         dag=dag
     )
     
