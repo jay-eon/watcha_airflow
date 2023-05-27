@@ -66,6 +66,7 @@ with DAG(
         'daily_indicator_mart', 
         default_args=default_args, 
         schedule_interval='0 7 * * * *',
+        start_date= datetime(2023, 1, 1, tzinfo = local_tz), 
         catchup=True
     ) as dag:
     
