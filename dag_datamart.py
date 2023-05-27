@@ -10,6 +10,7 @@ from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.dates import days_ago
 
 from sql.delete_data_sql import delete_mart_data
+from sql.insert_data_sql import insert_mart_data
 import pendulum
 
 # 타임존 설정
@@ -153,15 +154,24 @@ with DAG(
         dag=dag
     )
     
-    insert_data_task = BigQueryOperator(
+    insert_data_task = PythonOperator(
         task_id='insert_mart_data',
-        sql='sql/insert_data_sql(project_id, dataset, tb_indicator_mart, ds)',
-        use_legacy_sql=False,
-        write_disposition='WRITE_APPEND',
-        bigquery_conn_id='bigquery_conn',
+        python_callable=insert_mart_data,
+        op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
+        provide_context=True,
         trigger_rule = TriggerRule.ALL_SUCCESS,
         dag=dag
     )
     
-    start >> generate_delete_query_task >> delete_duplicates_task >> insert_data_task >> end
-    delete_duplicates_task >> failure >> end
+#     insert_data_task = BigQueryOperator(
+#         task_id='insert_mart_data',
+#         sql='sql/insert_data_sql(project_id, dataset, tb_indicator_mart, ds)',
+#         use_legacy_sql=False,
+#         write_disposition='WRITE_APPEND',
+#         bigquery_conn_id='bigquery_conn',
+#         trigger_rule = TriggerRule.ALL_SUCCESS,
+#         dag=dag
+#     )
+    
+    start >> delete_data_task >> insert_data_task >> end
+    delete_data_task >> failure >> end
