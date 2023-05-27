@@ -70,7 +70,7 @@ with DAG(
         'daily_indicator_datamart', 
         default_args=default_args, 
         schedule_interval='0 7 * * * *',
-        catchup=True
+        catchup=False
     ) as dag:
     
     yesterday_ds = '{{ yesterday_ds }}'
@@ -81,7 +81,7 @@ with DAG(
         task_id='delete_from_datamart',
         python_callable=generate_delete_query,
         op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
-        provide_context=False,
+        provide_context=True,
         dag=dag
     )
     
