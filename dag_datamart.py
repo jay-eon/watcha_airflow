@@ -64,7 +64,7 @@ with DAG(
         'daily_indicator_mart', 
         default_args=default_args, 
         schedule_interval='0 7 * * * *',
-        catchup=False
+        catchup=True
     ) as dag:
     
     yesterday_ds = '{{ yesterday_ds }}'
