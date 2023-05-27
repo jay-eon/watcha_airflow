@@ -1,11 +1,14 @@
 from datetime import date, datetime, timedelta
 from airflow import DAG
+
 from airflow.models import Variable
 from airflow.contrib.operators.bigquery_operator import BigQueryOperator
 from airflow.operators.python import BranchPythonOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.dates import days_ago
+
+from sql.delete_data_sql import generate_delete_query
 import pendulum
 
 # 타임존 설정
@@ -25,6 +28,11 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
+
+def generate_delete_query(project_id, dataset, table_nm, execute_date, **context):
+    # Your code here to generate the query dynamically
+    query = "SELECT * FROM my_table"
+    return query
 
 # DAG 시작 (오전 7시마다 수행)
 with DAG(
@@ -111,9 +119,17 @@ with DAG(
             LEFT OUTER JOIN weekly_event AS w ON d.event_date = w.event_date
     """.format(project_id, dataset, tb_indicator_mart, ds)
     
+    generate_delete_query_task = PythonOperator(
+        task_id='generate_delete_query',
+        python_callable=generate_delete_query,
+        op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
+        provide_context=True,
+        dag=dag
+    )
+    
     delete_duplicates_task = BigQueryOperator(
         task_id='delete_mart_data',
-        sql='sql/delete_data_sql(project_id, dataset, tb_indicator_mart, ds)',
+        sql=generate_delete_query,
         use_legacy_sql=False,
         bigquery_conn_id='bigquery_conn',
         dag=dag
@@ -146,5 +162,5 @@ with DAG(
         dag=dag
     )
     
-    start >> delete_duplicates_task >> insert_data_task >> end
+    start >> generate_delete_query_task >> delete_duplicates_task >> insert_data_task >> end
     delete_duplicates_task >> failure >> end
