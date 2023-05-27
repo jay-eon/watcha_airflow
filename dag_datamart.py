@@ -113,7 +113,7 @@ with DAG(
     
     delete_duplicates_task = BigQueryOperator(
         task_id='delete_mart_data',
-        sql=sql/delete_data_sql(project_id, dataset, tb_indicator_mart, ds),
+        sql='sql/delete_data_sql(project_id, dataset, tb_indicator_mart, ds)',
         use_legacy_sql=False,
         bigquery_conn_id='bigquery_conn',
         dag=dag
@@ -138,7 +138,7 @@ with DAG(
     
     insert_data_task = BigQueryOperator(
         task_id='insert_mart_data',
-        sql=sql/insert_data_sql(project_id, dataset, tb_indicator_mart, ds),
+        sql='sql/insert_data_sql(project_id, dataset, tb_indicator_mart, ds)',
         use_legacy_sql=False,
         write_disposition='WRITE_APPEND',
         bigquery_conn_id='bigquery_conn',
