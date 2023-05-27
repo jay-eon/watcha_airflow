@@ -31,10 +31,33 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-# def generate_delete_query(project_id, dataset, table_nm, execute_date, **context):
-#     # Your code here to generate the query dynamically
-#     query = "SELECT * FROM my_table"
-#     return query
+def generate_delete_query(project_id, dataset, table_nm, execute_date, **context):
+    
+    delete_sql = delete_mart_data(project_id, dataset, table_nm, execute_date)
+    
+    return  return BigQueryOperator(
+        task_id='delete_mart_data',
+        sql=delete_sql,
+        use_legacy_sql=False,
+        bigquery_conn_id='bigquery_conn',
+        dag=dag
+    )
+
+
+def generate_insert_query(project_id, dataset, table_nm, execute_date, **context):
+
+    insert_sql = insert_mart_data(project_id, dataset, table_nm, execute_date)
+    
+    return  BigQueryOperator(
+        task_id='insert_mart_data',
+        sql=insert_sql,
+        use_legacy_sql=False,
+        write_disposition='WRITE_APPEND',
+        bigquery_conn_id='bigquery_conn',
+        trigger_rule = TriggerRule.ALL_SUCCESS,
+        dag=dag
+    )
+
 
 # DAG 시작 (오전 7시마다 수행)
 with DAG(
@@ -123,7 +146,7 @@ with DAG(
     
     delete_data_task = PythonOperator(
         task_id='delete_mart_data',
-        python_callable=delete_mart_data,
+        python_callable=generate_delete_query,
         op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
         provide_context=True,
         dag=dag
@@ -156,7 +179,7 @@ with DAG(
     
     insert_data_task = PythonOperator(
         task_id='insert_mart_data',
-        python_callable=insert_mart_data,
+        python_callable=generate_insert_query,
         op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
         provide_context=True,
         trigger_rule = TriggerRule.ALL_SUCCESS,
