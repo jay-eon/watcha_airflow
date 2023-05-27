@@ -4,6 +4,7 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.contrib.operators.bigquery_operator import BigQueryOperator
 from airflow.operators.python import BranchPythonOperator
+from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.dates import days_ago
@@ -29,10 +30,10 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-def generate_delete_query(project_id, dataset, table_nm, execute_date, **context):
-    # Your code here to generate the query dynamically
-    query = "SELECT * FROM my_table"
-    return query
+# def generate_delete_query(project_id, dataset, table_nm, execute_date, **context):
+#     # Your code here to generate the query dynamically
+#     query = "SELECT * FROM my_table"
+#     return query
 
 # DAG 시작 (오전 7시마다 수행)
 with DAG(
