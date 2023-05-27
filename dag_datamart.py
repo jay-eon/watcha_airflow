@@ -34,6 +34,7 @@ default_args = {
 def generate_delete_query(project_id, dataset, table_nm, execute_date, **context):
     
     delete_sql = delete_mart_data(project_id, dataset, table_nm, execute_date)
+    print(delete_sql)
     
     delete_bigquery_task = BigQueryOperator(
         task_id='delete_mart_data',
@@ -47,6 +48,7 @@ def generate_delete_query(project_id, dataset, table_nm, execute_date, **context
 def generate_insert_query(project_id, dataset, table_nm, execute_date, **context):
 
     insert_sql = insert_mart_data(project_id, dataset, table_nm, execute_date)
+    print(insert_sql)
     
     insert_bigquery_task = BigQueryOperator(
         task_id='insert_mart_data',
