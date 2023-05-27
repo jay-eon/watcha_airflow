@@ -1,6 +1,3 @@
-from airflow.contrib.operators.bigquery_operator import BigQueryOperator
-from airflow.utils.trigger_rule import TriggerRule
-
 def insert_mart_data(project_id, dataset, table_nm, execute_date, **context):
     insert_sql = """
         INSERT INTO `{0}.{1}.{2}`
@@ -70,12 +67,4 @@ def insert_mart_data(project_id, dataset, table_nm, execute_date, **context):
             LEFT OUTER JOIN weekly_event AS w ON d.event_date = w.event_date
     """.format(project_id, dataset, table_nm, execute_date)
     
-    return  BigQueryOperator(
-        task_id='insert_mart_data',
-        sql=insert_sql,
-        use_legacy_sql=False,
-        write_disposition='WRITE_APPEND',
-        bigquery_conn_id='bigquery_conn',
-        trigger_rule = TriggerRule.ALL_SUCCESS,
-        dag=dag
-    )
+    return insert_sql
