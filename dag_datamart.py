@@ -9,7 +9,7 @@ from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.utils.dates import days_ago
 
-from sql.delete_data_sql import generate_delete_query
+from sql.delete_data_sql import delete_mart_data
 import pendulum
 
 # 타임존 설정
@@ -120,21 +120,21 @@ with DAG(
             LEFT OUTER JOIN weekly_event AS w ON d.event_date = w.event_date
     """.format(project_id, dataset, tb_indicator_mart, ds)
     
-    generate_delete_query_task = PythonOperator(
-        task_id='generate_delete_query',
-        python_callable=generate_delete_query,
+   delete_data_task = PythonOperator(
+        task_id='delete_mart_data',
+        python_callable=delete_mart_data,
         op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
         provide_context=True,
         dag=dag
     )
     
-    delete_duplicates_task = BigQueryOperator(
-        task_id='delete_mart_data',
-        sql=generate_delete_query,
-        use_legacy_sql=False,
-        bigquery_conn_id='bigquery_conn',
-        dag=dag
-    )
+#     delete_duplicates_task = BigQueryOperator(
+#         task_id='delete_mart_data',
+#         sql=generate_delete_query,
+#         use_legacy_sql=False,
+#         bigquery_conn_id='bigquery_conn',
+#         dag=dag
+#     )
     
     failure = DummyOperator(
         task_id='failure',
