@@ -1,5 +1,5 @@
 def generate_insert_query(project_id, dataset, table_nm, execute_date, **context):
-    sql = """
+    insert_sql = """
         INSERT INTO `{0}.{1}.{2}`
         WITH user_event_log AS ( 
             SELECT year, month, event_date, event_timestamp, week, week_num, platform
@@ -67,4 +67,12 @@ def generate_insert_query(project_id, dataset, table_nm, execute_date, **context
             LEFT OUTER JOIN weekly_event AS w ON d.event_date = w.event_date
     """.format(project_id, dataset, table_nm, execute_date)
     
-    return sql
+    return  BigQueryOperator(
+        task_id='insert_mart_data',
+        sql=insert_sql,
+        use_legacy_sql=False,
+        write_disposition='WRITE_APPEND',
+        bigquery_conn_id='bigquery_conn',
+        trigger_rule = TriggerRule.ALL_SUCCESS,
+        dag=dag
+    )
