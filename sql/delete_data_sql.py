@@ -1,3 +1,6 @@
+from airflow.contrib.operators.bigquery_operator import BigQueryOperator
+from airflow.utils.trigger_rule import TriggerRule
+
 def delete_mart_data(project_id, dataset, table_nm, execute_date, **context):
     delete_sql = """
         DELETE FROM `{0}.{1}.{2}`
