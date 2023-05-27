@@ -1,4 +1,4 @@
-def insert_data(project_id, dataset, table_nm, execute_date):
+def generate_insert_query(project_id, dataset, table_nm, execute_date, **context):
     sql = """
         INSERT INTO `{0}.{1}.{2}`
         WITH user_event_log AS ( 
