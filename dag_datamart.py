@@ -120,7 +120,7 @@ with DAG(
             LEFT OUTER JOIN weekly_event AS w ON d.event_date = w.event_date
     """.format(project_id, dataset, tb_indicator_mart, ds)
     
-   delete_data_task = PythonOperator(
+    delete_data_task = PythonOperator(
         task_id='delete_mart_data',
         python_callable=delete_mart_data,
         op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
