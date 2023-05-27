@@ -33,7 +33,7 @@ default_args = {
 
 def generate_delete_query(project_id, dataset, table_nm, execute_date, **context):
     
-    delete_sql = delete_mart_data(project_id, dataset, table_nm, '2023-01-02')
+    delete_sql = delete_mart_data(project_id, dataset, table_nm, execute_date)
     print(delete_sql)
     
     delete_bigquery_task = BigQueryOperator(
@@ -49,7 +49,7 @@ def generate_delete_query(project_id, dataset, table_nm, execute_date, **context
 
 def generate_insert_query(project_id, dataset, table_nm, execute_date, **context):
 
-    insert_sql = insert_mart_data(project_id, dataset, table_nm, '2023-01-02')
+    insert_sql = insert_mart_data(project_id, dataset, table_nm, execute_date)
     print(insert_sql)
     
     insert_bigquery_task = BigQueryOperator(
@@ -67,10 +67,10 @@ def generate_insert_query(project_id, dataset, table_nm, execute_date, **context
 
 # DAG 시작 (오전 7시마다 수행)
 with DAG(
-        'daily_indicator_mart', 
+        'daily_indicator_datamart', 
         default_args=default_args, 
         schedule_interval='0 7 * * * *',
-        catchup=False
+        catchup=True
     ) as dag:
     
     yesterday_ds = '{{ yesterday_ds }}'
