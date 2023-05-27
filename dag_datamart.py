@@ -35,7 +35,7 @@ def generate_delete_query(project_id, dataset, table_nm, execute_date, **context
     
     delete_sql = delete_mart_data(project_id, dataset, table_nm, execute_date)
     
-    return BigQueryOperator(
+    delete_bigquery_task = BigQueryOperator(
         task_id='delete_mart_data',
         sql=delete_sql,
         use_legacy_sql=False,
@@ -48,7 +48,7 @@ def generate_insert_query(project_id, dataset, table_nm, execute_date, **context
 
     insert_sql = insert_mart_data(project_id, dataset, table_nm, execute_date)
     
-    return BigQueryOperator(
+    insert_bigquery_task = BigQueryOperator(
         task_id='insert_mart_data',
         sql=insert_sql,
         use_legacy_sql=False,
@@ -196,5 +196,5 @@ with DAG(
 #         dag=dag
 #     )
     
-    start >> delete_data_task >> insert_data_task >> end
-    delete_data_task >> failure >> end
+    start >> delete_data_task >> delete_bigquery_task >> insert_data_task >> insert_bigquery_task >> end
+    delete_data_task >> delete_bigquery_task >> failure >> end
