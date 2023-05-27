@@ -178,7 +178,7 @@ with DAG(
     )
     
     insert_data_task = PythonOperator(
-        task_id='insert_from_datamart',
+        task_id='insert_into_datamart',
         python_callable=generate_insert_query,
         op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
         provide_context=True,
