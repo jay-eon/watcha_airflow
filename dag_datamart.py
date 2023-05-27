@@ -196,5 +196,5 @@ with DAG(
 #         dag=dag
 #     )
     
-    start >> delete_data_task >> delete_bigquery_task >> insert_data_task >> insert_bigquery_task >> end
-    delete_data_task >> delete_bigquery_task >> failure >> end
+    start >> delete_data_task >>  insert_data_task >> end
+    delete_data_task >> failure >> end
