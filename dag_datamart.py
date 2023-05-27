@@ -33,7 +33,7 @@ default_args = {
 
 def generate_delete_query(project_id, dataset, table_nm, execute_date, **context):
     
-    delete_sql = delete_mart_data(project_id, dataset, table_nm, execute_date)
+    delete_sql = delete_mart_data(project_id, dataset, table_nm, '2023-01-01')
     print(delete_sql)
     
     delete_bigquery_task = BigQueryOperator(
@@ -47,7 +47,7 @@ def generate_delete_query(project_id, dataset, table_nm, execute_date, **context
 
 def generate_insert_query(project_id, dataset, table_nm, execute_date, **context):
 
-    insert_sql = insert_mart_data(project_id, dataset, table_nm, execute_date)
+    insert_sql = insert_mart_data(project_id, dataset, table_nm, '2023-01-01')
     print(insert_sql)
     
     insert_bigquery_task = BigQueryOperator(
@@ -66,8 +66,7 @@ with DAG(
         'daily_indicator_mart', 
         default_args=default_args, 
         schedule_interval='0 7 * * * *',
-        start_date= datetime(2023, 1, 1, tzinfo = local_tz), 
-        catchup=True
+        catchup=False
     ) as dag:
     
     yesterday_ds = '{{ yesterday_ds }}'
