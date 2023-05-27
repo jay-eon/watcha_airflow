@@ -43,6 +43,8 @@ def generate_delete_query(project_id, dataset, table_nm, execute_date, **context
         bigquery_conn_id='bigquery_conn',
         dag=dag
     )
+    
+    delete_bigquery_task.execute(context)
 
 
 def generate_insert_query(project_id, dataset, table_nm, execute_date, **context):
@@ -59,6 +61,8 @@ def generate_insert_query(project_id, dataset, table_nm, execute_date, **context
         trigger_rule = TriggerRule.ALL_SUCCESS,
         dag=dag
     )
+    
+    insert_bigquery_task.execute(context)
 
 
 # DAG 시작 (오전 7시마다 수행)
