@@ -69,7 +69,7 @@ def generate_insert_query(project_id, dataset, table_nm, execute_date, **context
 with DAG(
         'daily_indicator_datamart', 
         default_args=default_args, 
-        schedule_interval='0 7 * * * *',
+        schedule_interval='0 7 * * *',
         catchup=False
     ) as dag:
     
