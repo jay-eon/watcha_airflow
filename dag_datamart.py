@@ -27,6 +27,7 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime(2023, 1, 1, tzinfo = local_tz), 
+    'end_date' : datetime(2023, 1, 5, tzinfo = local_tz),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
@@ -70,7 +71,7 @@ with DAG(
         'daily_indicator_datamart', 
         default_args=default_args, 
         schedule_interval='0 7 * * *',
-        catchup=False
+        catchup=True
     ) as dag:
     
     yesterday_ds = '{{ yesterday_ds }}'
