@@ -67,7 +67,7 @@ def generate_insert_query(project_id, dataset, table_nm, execute_date, **context
 
 # DAG 시작 (오전 7시마다 수행)
 with DAG(
-        'daily_indicator_datamart', 
+        'daily_indicator_datamart_test', 
         default_args=default_args, 
         schedule_interval='0 7 * * *',
         catchup=True
@@ -103,7 +103,7 @@ with DAG(
     )
     
     insert_data_task = PythonOperator(
-        task_id='insert_into_datamart_test',
+        task_id='insert_into_datamart',
         python_callable=generate_insert_query,
         op_kwargs={'project_id': project_id, 'dataset': dataset, 'table_nm': tb_indicator_mart, 'execute_date':ds },
         provide_context=True,
